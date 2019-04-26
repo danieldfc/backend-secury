@@ -27,4 +27,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(routes);
 
+require("./app/controllers/index")(app);
+
 server.listen(process.env.PORT || 3333);

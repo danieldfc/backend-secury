@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("../../database");
 
 const Occurrence = new mongoose.Schema(
   {
@@ -8,19 +8,19 @@ const Occurrence = new mongoose.Schema(
       lowercase: true,
       unique: true
     },
-    users: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    },
     description: {
       type: String,
-      required: true,
-      lowercase: true
+      required: true
     },
-    type_Occurrence: {
-      type: String,
+    assigneTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+    completed: {
+      type: Boolean,
       required: true,
-      lowercase: true
+      default: false
     }
   },
   {

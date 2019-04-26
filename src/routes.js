@@ -21,11 +21,11 @@ routes.post("/user/:id/occurrence", UserController.store);
 
 // Occurrence
 // GET
-routes.get("/occurrence", OccurrenceController.all);
-routes.get("/occurrence/:id", OccurrenceController.show);
+routes.get("/admin/occurrence", OccurrenceController.all);
+//routes.get("/occurrence/:id", OccurrenceController.show);
 //routes.get("/occurrence/:id", OccurrenceController.);
 
 //POST
-routes.post("/occurrence/create", OccurrenceController.store);
+//routes.post("/occurrence/create", OccurrenceController.store);
 
 module.exports = routes;
