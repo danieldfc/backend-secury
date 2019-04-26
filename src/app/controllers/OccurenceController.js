@@ -1,5 +1,5 @@
 const express = require("express");
-const authMiddleware = require("../Milldleware/auth");
+const authMiddleware = require("../middleware/auth");
 
 const Occurrence = require("../models/Occurrence");
 
