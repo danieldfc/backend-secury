@@ -8,15 +8,17 @@ module.exports = (req, res, next) => {
     return res.status(401).send({ error: "No token provided" });
   }
 
+  // Formato de autenticação Bearer anhdsfijhpaosdhfojahnfdjohna
+
   const parts = autHeader.split(" ");
 
   if (!parts.length === 2) {
-    return res.status(402).send({ error: "Token error" });
+    return res.status(401).send({ error: "Token error" });
   }
 
   const [scheme, token] = parts;
 
-  if (!/^Bearer$^/i.test(scheme)) {
+  if (!/^Bearer$/i.test(scheme)) {
     return res.status(401).send({ error: "Token malformatted" });
   }
 

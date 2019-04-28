@@ -1,18 +1,17 @@
 const mongoose = require("../../database");
 
-const Occurrence = new mongoose.Schema(
+const TaskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
-      lowercase: true,
-      unique: true
-    },
-    description: {
-      type: String,
       required: true
     },
-    assigneTo: {
+    project: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      required: true
+    },
+    assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
@@ -28,4 +27,6 @@ const Occurrence = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Occurrence", Occurrence);
+const Task = mongoose.model("Task", TaskSchema);
+
+module.exports = Task;

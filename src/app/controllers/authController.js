@@ -2,7 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const mailer = require("../modules/mailer");
+const mailer = require("../../modules/mailer");
 
 const User = require("../models/User");
 const config = require("../../config");
@@ -19,7 +19,7 @@ router.post("/register", async (req, res) => {
   const { email } = req.body;
   try {
     if (await User.findOne({ email })) {
-      return res.status(400).send({ error: "User already exist" });
+      return res.status(400).send({ error: "User already exists" });
     }
 
     const user = await User.create(req.body);
@@ -31,7 +31,7 @@ router.post("/register", async (req, res) => {
       token: generateToken({ id: user.id })
     });
   } catch (err) {
-    return res.status(400).send({ error: "Restration Failed" });
+    return res.status(400).send({ error: "Registration Failed" });
   }
 });
 
@@ -96,7 +96,7 @@ router.post("/forgot_password", async (req, res) => {
   } catch (err) {
     return res
       .status(400)
-      .send({ error: "Erro on forgot password. try again" });
+      .send({ error: "Error on forgot password. try again" });
   }
 });
 
@@ -105,7 +105,7 @@ router.post("/reset_password", async (req, res) => {
 
   try {
     const user = await User.findOne({ email }).select(
-      "+passwordResetToken passwordExpires"
+      "+passwordResetToken passwordResetExpires"
     );
     if (!user) {
       return res.status(400).send({ error: "User not found" });
@@ -126,7 +126,7 @@ router.post("/reset_password", async (req, res) => {
 
     res.send();
   } catch (err) {
-    res.status(400).send({ error: "Cannot set password, try again" });
+    return res.status(400).send({ error: "Cannot set password, try again" });
   }
 });
 
