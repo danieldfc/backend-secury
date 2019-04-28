@@ -10,15 +10,13 @@ const transport = nodemailer.createTransport({
   auth: { user, pass }
 });
 
-transport.use("compile", hbs(options));
-
 const handleOtions = {
   viewEngine: {
     defaultLayout: "handlebars",
-    layoutDir: path.resolve("./src/resources/mail/"),
-    partialsDir: { dir: path.resolve("./src/resources/mail/") }
+    layoutDir: path.resolve(__dirname, "..", "..", "src", "resources", "mail"),
+    partialsDir: path.resolve(__dirname, "..", "..", "src", "resources", "mail")
   },
-  viewPath: path.resolve("./src/resources/mail"),
+  viewPath: path.resolve(__dirname, "..", "..", "src", "resources", "mail"),
   extName: ".html"
 };
 

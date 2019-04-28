@@ -81,8 +81,7 @@ router.post("/forgot_password", async (req, res) => {
       {
         from: "daniel.david772@gmail.com",
         to: email,
-        subject: "Test",
-        template: "auth/forgot_password",
+        template: "auth/",
         context: { token }
       },
       err => {
@@ -96,7 +95,6 @@ router.post("/forgot_password", async (req, res) => {
       }
     );
   } catch (err) {
-    console.log(err);
     return res
       .status(400)
       .send({ error: "Error on forgot password. try again" });
