@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const config = require("../config");
+const config = require("../config/auth.json");
 
 mongoose.connect(config.url, {
   useNewUrlParser: true,

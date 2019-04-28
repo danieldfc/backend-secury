@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const mailer = require("../../modules/mailer");
 
 const User = require("../models/User");
-const config = require("../../config");
+const config = require("../../config/auth.json");
 
 const router = express.Router();
 
@@ -79,13 +79,14 @@ router.post("/forgot_password", async (req, res) => {
 
     mailer.sendMail(
       {
-        to: email,
         from: "daniel.david772@gmail.com",
+        to: email,
         template: "auth/forgot_password",
-        contex: { token }
+        context: { token }
       },
       err => {
         if (err) {
+          console.log(err);
           return res
             .status(400)
             .send({ error: "Cannot send forgot password email" });
@@ -94,6 +95,7 @@ router.post("/forgot_password", async (req, res) => {
       }
     );
   } catch (err) {
+    console.log(err);
     return res
       .status(400)
       .send({ error: "Error on forgot password. try again" });

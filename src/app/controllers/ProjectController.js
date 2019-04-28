@@ -62,18 +62,15 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// atualizar project
 router.put("/:id", async (req, res) => {
   try {
     const { title, description, tasks } = req.body;
 
-    const project = await Project.findByIdAndUpdate(
-      req.params.id,
-      {
-        title,
-        description
-      },
-      { new: true }
-    );
+    const project = await Project.findByIdAndUpdate(req.params.id, {
+      title,
+      description
+    });
 
     project.tasks = [];
     await Task.remove({ project: project._id });
