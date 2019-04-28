@@ -81,6 +81,7 @@ router.post("/forgot_password", async (req, res) => {
       {
         from: "daniel.david772@gmail.com",
         to: email,
+        subject: "Test",
         template: "auth/forgot_password",
         context: { token }
       },
