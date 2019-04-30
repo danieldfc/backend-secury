@@ -2,7 +2,8 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const mailer = require("../../modules/mailer");
+//const mailer = require("../../modules/mailer");
+//const emailService = require("../../services/email-services");
 
 const User = require("../models/User");
 const config = require("../../config/auth.json");
@@ -23,6 +24,10 @@ router.post("/register", async (req, res) => {
     }
 
     const user = await User.create(req.body);
+
+    //await emailService.send(req.body.email, "Bem vindo ao Node Store", {
+    //  email: config.email_tmpl.replace("{0}", req.body.email)
+    //});
 
     user.password = undefined;
 
@@ -46,6 +51,12 @@ router.post("/authenticate", async (req, res) => {
   if (!(await bcrypt.compare(password, user.password))) {
     return res.status(400).send({ error: "Invalid password" });
   }
+
+  //await emailService.send(
+  //  req.body.email,
+  //  "Autenticado",
+  //  config.email_tmpl.replace("{0}", req.body.email)
+  //);
 
   user.password = undefined;
 
@@ -77,25 +88,23 @@ router.post("/forgot_password", async (req, res) => {
       }
     });
 
-    mailer.sendMail(
+    emailService.send(
       {
         from: "daniel.david772@gmail.com",
         to: email,
         template: "/auth/forgot_password",
-        context: { token }
+        context: { token, email }
       },
       err => {
         if (err) {
-          console.log(err);
           return res
             .status(400)
             .send({ error: "Cannot send forgot password email" });
         }
-        return res.send();
+        return res.send("Email send");
       }
     );
   } catch (err) {
-    console.log(err);
     return res
       .status(400)
       .send({ error: "Error on forgot password. try again" });
@@ -116,6 +125,7 @@ router.post("/reset_password", async (req, res) => {
       return res.status(400).send({ error: "Token invalid" });
     }
     const now = new Date();
+    now.setHours(now.getHours() + 1);
 
     if (now > user.passwordResetExpires) {
       return res

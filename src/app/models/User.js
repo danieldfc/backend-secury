@@ -26,7 +26,12 @@ const UserShema = new mongoose.Schema(
       type: String,
       required: true
     },
-    occurrence: []
+    occurrence: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Task"
+      }
+    ]
   },
   {
     timestamps: true
