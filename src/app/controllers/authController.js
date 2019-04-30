@@ -2,11 +2,10 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-//const mailer = require("../../modules/mailer");
-//const emailService = require("../../services/email-services");
 
 const User = require("../models/User");
 const config = require("../../config/auth.json");
+const mailer = require("../../modules/mailer");
 
 const router = express.Router();
 
@@ -25,23 +24,35 @@ router.post("/register", async (req, res) => {
 
     const user = await User.create(req.body);
 
-    //await emailService.send(req.body.email, "Bem vindo ao Node Store", {
-    //  email: config.email_tmpl.replace("{0}", req.body.email)
-    //});
-
     user.password = undefined;
+    mailer.sendMail(
+      {
+        from: "suporte.security@gmail.com",
+        to: email,
+        subject: "Welcome",
+        template: "/auth/welcome",
+        context: { email }
+      },
+      err => {
+        if (err) {
+          return res
+            .status(400)
+            .send({ error: "Cannot send forgot password email" });
+        }
+      }
+    );
 
     return res.send({
       user,
       token: generateToken({ id: user.id })
     });
   } catch (err) {
-    return res.status(400).send({ error: "Registration Failed" });
+    return res.status(400).send({ error: "Registration Failed", token });
   }
 });
 
 router.post("/authenticate", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, token } = req.body;
 
   const user = await User.findOne({ email }).select("+password");
 
@@ -51,12 +62,22 @@ router.post("/authenticate", async (req, res) => {
   if (!(await bcrypt.compare(password, user.password))) {
     return res.status(400).send({ error: "Invalid password" });
   }
-
-  //await emailService.send(
-  //  req.body.email,
-  //  "Autenticado",
-  //  config.email_tmpl.replace("{0}", req.body.email)
-  //);
+  mailer.sendMail(
+    {
+      from: "suporte.security@gmail.com",
+      to: email,
+      subject: "Authorization",
+      template: "/auth/authorization",
+      context: { email, token }
+    },
+    err => {
+      if (err) {
+        return res
+          .status(400)
+          .send({ error: "Cannot send forgot password email" });
+      }
+    }
+  );
 
   user.password = undefined;
 
@@ -88,12 +109,13 @@ router.post("/forgot_password", async (req, res) => {
       }
     });
 
-    emailService.send(
+    mailer.sendMail(
       {
-        from: "daniel.david772@gmail.com",
+        from: "suporte.security@gmail.com",
         to: email,
+        subject: "Forgot Password",
         template: "/auth/forgot_password",
-        context: { token, email }
+        context: { email, token }
       },
       err => {
         if (err) {
@@ -101,7 +123,7 @@ router.post("/forgot_password", async (req, res) => {
             .status(400)
             .send({ error: "Cannot send forgot password email" });
         }
-        return res.send("Email send");
+        return res.status(200).send({ user, message: "Email send" });
       }
     );
   } catch (err) {
@@ -132,6 +154,26 @@ router.post("/reset_password", async (req, res) => {
         .status(400)
         .send({ error: "Token Expired, generate a new one" });
     }
+
+    mailer.sendMail(
+      {
+        from: "suporte.security@gmail.com",
+        to: email,
+        subject: "Forgot Password",
+        template: "/auth/reset_password",
+        context: { email, token }
+      },
+      err => {
+        if (err) {
+          return res
+            .status(400)
+            .send({ error: "Cannot send forgot password email" });
+        }
+        return res.status(200).send({ user, message: "Email send" });
+      }
+    );
+
+
     user.password = password;
 
     await user.save();

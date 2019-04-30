@@ -94,7 +94,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// Deletar um projeto
+// Deletar uma task
 router.delete("/:id", async (req, res) => {
   try {
     await Task.findByIdAndRemove(req.params.id);
