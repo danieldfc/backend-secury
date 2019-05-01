@@ -1,6 +1,7 @@
 node_modules/
 
-src/config/*
-!src/mail.json
-
 .env
+
+/config/*
+!config/mail.json
+
