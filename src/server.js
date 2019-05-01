@@ -18,8 +18,6 @@ io.on("connection", socket => {
   });
 });
 
-app.set("views", "");
-
 require("./database");
 
 app.use((req, res, next) => {
