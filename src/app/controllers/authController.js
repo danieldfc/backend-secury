@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
 const User = require("../models/User");
+const Police = require("../models/Police");
 const config = require("../../config/auth.json");
 const mailer = require("../../modules/mailer");
 
@@ -16,38 +17,71 @@ function generateToken(params = {}) {
 }
 
 router.post("/register", async (req, res) => {
-  const { email } = req.body;
-  try {
-    if (await User.findOne({ email })) {
-      return res.status(400).send({ error: "User already exists" });
-    }
-
-    const user = await User.create(req.body);
-
-    user.password = undefined;
-    mailer.sendMail(
-      {
-        from: "suporte.security@gmail.com",
-        to: email,
-        subject: "Welcome",
-        template: "/auth/welcome",
-        context: { email }
-      },
-      err => {
-        if (err) {
-          return res
-            .status(400)
-            .send({ error: "Cannot send forgot password email" });
-        }
+  const { email, usuario, isPolice, data } = req.body;
+  if (isPolice === true ? "true" : true) {
+    try {
+      if (await Police.findOne({ email })) {
+        return res.status(400).send({ error: "Police already exists" });
       }
-    );
+      const police = await Police.create({ ...data, email });
+      police.password = undefined;
+      police.cpf = undefined;
 
-    return res.send({
-      user,
-      token: generateToken({ id: user.id })
-    });
-  } catch (err) {
-    return res.status(400).send({ error: "Registration Failed", token });
+      mailer.sendMail(
+        {
+          from: "suporte.security@gmail.com",
+          to: email,
+          subject: "Welcome",
+          template: "/auth/welcome_police",
+          context: { email }
+        },
+        err => {
+          if (err) {
+            return res
+              .status(400)
+              .send({ error: "Cannot send forgot password email" });
+          }
+        }
+      );
+      return res.send({
+        police,
+        token: generateToken({ id: police.id })
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).send({ error: "Error creating new Police" });
+    }
+  } else if (isPolice === false ? "false" : false) {
+    try {
+      if (await User.findOne({ email })) {
+        return res.status(400).send({ error: "User already exists" });
+      }
+
+      const user = await User.create({ ...usuario, email });
+      user.password = undefined;
+      mailer.sendMail(
+        {
+          from: "suporte.security@gmail.com",
+          to: email,
+          subject: "Welcome",
+          template: "/auth/welcome",
+          context: { email }
+        },
+        err => {
+          if (err) {
+            return res
+              .status(400)
+              .send({ error: "Cannot send forgot password email" });
+          }
+        }
+      );
+      return res.send({
+        user,
+        token: generateToken({ id: user.id })
+      });
+    } catch (err) {
+      return res.status(400).send({ error: "Error creating new User" });
+    }
   }
 });
 
@@ -172,7 +206,6 @@ router.post("/reset_password", async (req, res) => {
         return res.status(200).send({ user, message: "Email send" });
       }
     );
-
 
     user.password = password;
 
