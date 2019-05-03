@@ -10,10 +10,13 @@ const TaskSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    assignedTo: {
+    ofUser: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
+      ref: "User"
+    },
+    ofPolice: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Police"
     },
     completed: {
       type: Boolean,
