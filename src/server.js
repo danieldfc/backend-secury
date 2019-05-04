@@ -9,12 +9,12 @@ app.use(cors());
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-const server = require("http").Server(app);
+const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 
 io.on("connection", socket => {
-  socket.on("connectRoom", box => {
-    socket.join(box);
+  socket.on("connectRoom", user => {
+    socket.join(user);
   });
 });
 

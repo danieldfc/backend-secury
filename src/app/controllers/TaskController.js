@@ -5,122 +5,63 @@ const authMiddleware = require("../middleware/auth");
 const Task = require("../models/Task");
 const User = require("../models/User");
 const Police = require("../models/Police");
+const io = require("socket.io");
 
 const router = express.Router();
 
 router.use(authMiddleware);
 
 router.post("/list", async (req, res) => {
-  const { isPolice, data, usuario } = req.body;
+  try {
+    const tasks = await Task.find().populate("assignedTo");
 
-  if (isPolice === true) {
-    try {
-      const { email } = data;
-      const police = await Police.findById(req.userId, { email }).select(
-        "+cpf password occurrence"
-      );
-
-      if (!police) {
-        return res.status(400).send({ error: "Error loading police!" });
-      }
-
-      const { occurrence } = police;
-
-      await Promise.all(
-        occurrence.map(async task => {
-          const policeTask = Task({ ...task });
-
-          await policeTask.save();
-
-          police.occurrence.push(policeTask);
-        })
-      );
-
-      return res.send({ tasks });
-    } catch (err) {
-      console.log(err);
-      return res.status(400).send({ error: "Error loading tasks" });
+    if (!tasks) {
+      return res.status(404).send({ error: "Error loading tasks" });
     }
-  } else if (isPolice === false) {
-    try {
-      const {} = usuario;
-      const tasks = await Task.find();
 
-      return res.send({ tasks });
-    } catch (err) {
-      return res.status(400).send({ error: "Error loading tasks" });
-    }
+    return res.status(202).send({ tasks });
+  } catch (err) {
+    return res.status(400).send({ error: "Error loading tasks" });
   }
 });
 
 // Criar tarefa
 router.post("/", async (req, res) => {
-  const { isPolice, usuario, data } = req.body;
-  if (isPolice === true) {
-    try {
-      const { email, cpf, password, occurrence } = data;
+  try {
+    const { email, occurrence } = req.body;
 
-      const police = await Police.findByIdAndUpdate(
-        req.userId,
-        { email, cpf, password },
-        { new: true }
-      )
-        .select("+cpf password occurrence")
-        .populate("Task");
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { email },
+      { new: true }
+    )
+      .select("+password occurrence")
+      .populate("Task");
 
-      if (!police) {
-        return res.status(400).send({ error: "Police not found" });
-      }
+    console.log(user);
 
-      await Promise.all(
-        occurrence.map(async task => {
-          const policeTask = new Task({ ...task, ofPolice: police._id });
-
-          await policeTask.save();
-
-          police.occurrence.push(policeTask);
-        })
-      );
-      await police.save();
-      police.password = undefined;
-
-      return res.status(202).send({ police });
-    } catch (err) {
-      return res.status(400).send({ error: "Error creating task of police" });
+    if (!user) {
+      return res.status(400).send({ error: "User not found" });
     }
-  } else if (isPolice === false) {
-    try {
-      const { email, password, occurrence } = usuario;
 
-      const user = await User.findByIdAndUpdate(
-        req.userId,
-        { email, password },
-        { new: true }
-      )
-        .select("+password occurrence")
-        .populate("Task");
+    await Promise.all(
+      occurrence.map(async task => {
+        const userTask = new Task({ ...task, assignedTo: user._id });
 
-      if (!user) {
-        return res.status(400).send({ error: "User not found" });
-      }
+        await userTask.save();
 
-      await Promise.all(
-        occurrence.map(async task => {
-          const userTask = new Task({ ...task, ofUser: user._id });
+        user.occurrence.push(userTask);
+        req.io.sockets.in(user._id).emit("taskCreate", task);
+      })
+    );
 
-          await userTask.save();
+    await user.save();
+    user.password = undefined;
 
-          user.occurrence.push(userTask);
-        })
-      );
-
-      await user.save();
-      user.password = undefined;
-
-      return res.status(200).send({ user });
-    } catch (err) {
-      return res.status(400).send({ error: "Error creating task of user" });
-    }
+    return res.status(200).send({ user });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).send({ error: "Error creating task of user" });
   }
 });
 
@@ -160,6 +101,7 @@ router.put("/:id", async (req, res) => {
         await userTask.save();
 
         user.occurrence.push(userTask);
+        req.io.sockets.in(user._id).emit("taskUpdate", task);
       })
     );
 
@@ -185,24 +127,3 @@ router.delete("/:id", async (req, res) => {
 });
 
 module.exports = app => app.use("/task", router);
-/*
-como enviar socket.io para o client
-
-async store(req, res) {
-    console.log(req.file);
-    const box = await Box.findById(req.params.id);
-
-    const file = await File.create({
-      title: req.file.originalname,
-      path: req.file.key,
-    });
-
-    box.files.push(file);
-
-    await box.save();
-
-    req.io.sockets.in(box._id).emit('file', file);
-    // Criar um arquivo
-    return res.json(file);
-  }
-*/

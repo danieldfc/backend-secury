@@ -33,12 +33,10 @@ const PoliceShema = new mongoose.Schema(
       type: String,
       required: true
     },
-    occurrence: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Task"
-      }
-    ]
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }
   },
   {
     timestamps: true
