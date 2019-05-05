@@ -9,7 +9,7 @@
 [![express](https://img.shields.io/badge/express-4.16.4-brightgreen.svg)](https://www.npmjs.com/package/express)
 [![node](https://img.shields.io/badge/node-%5E10.13.0-brightgreen.svg)](https://nodejs.org/en/)
 [![GitHub issues](https://img.shields.io/badge/open%20issues-0-brightgreen.svg)](https://github.com/danielfelizardo2017/backend-secury/issues)
-[![GitHub last commit](https://img.shields.io/badge/last%20commit-today-orange.svg)](https://github.com/danielfelizardo2017/jobify/commits/master)
+[![GitHub last commit](https://img.shields.io/badge/last%20commit-today-orange.svg)](https://github.com/danielfelizardo2017/backend-secury/commits/master)
 
 <!-- LOGO -->
 <br/>
