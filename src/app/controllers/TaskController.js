@@ -125,7 +125,7 @@ router.post("/completed/:id", async (req, res) => {
         $set: {
           assignedTo: undefined
         }
-      });
+      }).select("+password cpf");
       await Task.findByIdAndUpdate(task.id, {
         $set: {
           completed: true
@@ -133,24 +133,25 @@ router.post("/completed/:id", async (req, res) => {
       }).select("+description title");
 
       await Task.findByIdAndRemove(task.id).select("+description title");
-      user.occurrence = [];
-      await Task.remove({ assignedTo: user._id });
 
-      await Promise.all(
-        user.occurrence.map(async tasks => {
-          const userTask = new Task({ ...tasks, assignedTo: user._id });
-
-          await userTask.save();
-
-          user.occurrence.push(userTask);
-        })
+      const userTask = await Task.find({ assignedTo: req.userId }).select(
+        "+description title assignedTo"
       );
+
+      await User.findByIdAndUpdate(user.id, {
+        $set: {
+          occurrence: userTask
+        }
+      }).select("+password");
     }
 
     await task.save();
     await user.save();
     await police.save();
+
     req.io.sockets.in(police._id).emit("taskUpdate", user);
+
+    user.password = undefined;
     return res
       .status(200)
       .send({ user, message: "Task updated and deleted was success!" });
