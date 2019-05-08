@@ -98,7 +98,6 @@ router.post("/:id", async (req, res) => {
     req.io.sockets.in(police._id).emit("taskUpdate", task);
     return res.status(200).send({ task, message: "Task updated was success!" });
   } catch (err) {
-    console.log(err);
     return res.status(400).send({ error: "Error loading task" });
   }
 });
