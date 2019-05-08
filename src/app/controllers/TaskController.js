@@ -88,6 +88,8 @@ router.post("/:id", async (req, res) => {
           completed: false
         }
       });
+    } else {
+      return res.status(403).send({ error: "Busy police error at the moment" });
     }
     await user.save();
     await task.save();
@@ -143,6 +145,10 @@ router.post("/completed/:id", async (req, res) => {
           occurrence: userTask
         }
       }).select("+password");
+    } else {
+      return res
+        .status(403)
+        .status({ error: "Busy police error at the moment" });
     }
 
     await task.save();
