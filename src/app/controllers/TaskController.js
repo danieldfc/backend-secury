@@ -1,5 +1,4 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
 const authMiddleware = require("../middleware/auth");
 
 const Task = require("../models/Task");
