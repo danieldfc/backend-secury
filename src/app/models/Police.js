@@ -30,8 +30,7 @@ const PoliceShema = new mongoose.Schema(
       select: false
     },
     location: {
-      type: String,
-      required: true
+      type: String
     },
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
