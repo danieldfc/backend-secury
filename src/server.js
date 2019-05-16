@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const morgan = require("morgan");
 const cors = require("cors");
 const exphbs = require("express-handlebars");
 
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(morgan("dev"));
 
 require("./app/controllers/index")(app);
 
