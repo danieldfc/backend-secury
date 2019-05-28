@@ -23,7 +23,8 @@ const UserShema = new mongoose.Schema(
       select: false
     },
     location: {
-      type: String
+      type: String,
+      required: true
     },
     occurrence: [
       {
