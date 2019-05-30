@@ -9,21 +9,6 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
-// listar as tasks não completadas
-router.post("/list", async (req, res) => {
-  try {
-    const tasks = await Task.find({ completed: false });
-
-    if (!tasks) {
-      return res.status(404).send({ error: "Error loading tasks" });
-    }
-
-    return res.status(202).send({ tasks });
-  } catch (err) {
-    return res.status(400).send({ error: "Error loading tasks" });
-  }
-});
-
 // Criar tarefa
 router.post("/", async (req, res) => {
   try {
@@ -98,6 +83,49 @@ router.post("/:id", async (req, res) => {
     return res.status(200).send({ task, message: "Task updated was success!" });
   } catch (err) {
     return res.status(400).send({ error: "Error loading task" });
+  }
+});
+
+// listar as tasks não completadas
+router.post("/list", async (req, res) => {
+  try {
+    const tasks = await Task.find({ completed: false });
+
+    if (!tasks) {
+      return res.status(404).send({ error: "Error loading tasks" });
+    }
+
+    return res.status(202).send({ tasks });
+  } catch (err) {
+    return res.status(400).send({ error: "Error loading tasks" });
+  }
+});
+
+// listar as tasks de usuário
+router.post("/list/:id", async (req, res) => {
+  try {
+    const tasks = await Task.findOne({ assignedTo: req.params.id })
+      .select("+description title")
+      .populate("assignedTo");
+
+    await Promise.all(
+      tasks.assignedTo.occurrence.map(async task => {
+        const userTask = new Task({
+          ...task,
+          assignedTo: req.params.id
+        });
+
+        await userTask.save();
+
+        tasks.assignedTo.occurrence.push(userTask);
+
+        req.io.sockets.in(user._id).emit("taskCreate", task);
+      })
+    );
+    return res.send({ occurrence });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).send(err);
   }
 });
 
