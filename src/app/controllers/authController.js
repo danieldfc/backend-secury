@@ -17,11 +17,15 @@ function generateToken(params = {}) {
 const router = express.Router();
 
 router.post("/register/police", async (req, res) => {
-  const { email } = req.body;
+  const { email, cpf } = req.body;
 
   try {
     if (await Police.findOne({ email })) {
       return res.status(403).send({ error: "Police already exists" });
+    }
+
+    if (await Police.findOne({ cpf })) {
+      return res.status(403).send({ error: "Este cpf já existe" });
     }
 
     const police = await Police.create(req.body);
@@ -159,7 +163,7 @@ router.post("/reset_password/police", async (req, res) => {
 
   try {
     const police = await Police.findOne({ email }).select(
-      "+passwordResetToken passwordResetExpires cpf password"
+      "+password cpf passwordResetToken createdAt updatedAt __v location email"
     );
 
     if (!police) {
