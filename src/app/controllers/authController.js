@@ -108,6 +108,25 @@ router.post("/authenticate/police", async (req, res) => {
   }
 });
 
+//atualizar police
+router.post("/update/police/:id", async (req, res) => {
+  const { email, cpf, location } = req.body;
+  try {
+    const police = await Police.findByIdAndUpdate(
+      req.params.id,
+      {
+        email,
+        cpf,
+        location
+      },
+      { new: true }
+    );
+    return res.status(200).send({ police });
+  } catch (err) {
+    return res.status(404).send({ error: "Error ao atualizar police" });
+  }
+});
+
 router.post("/forgot_password/police", async (req, res) => {
   const { email, cpf } = req.body;
   try {
@@ -301,6 +320,24 @@ router.post("/authenticate/user", async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(400).send({ error: "Error authorization" });
+  }
+});
+
+//atualizar user
+router.post("/update/user/:id", async (req, res) => {
+  const { email, location } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        email,
+        location
+      },
+      { new: true }
+    );
+    return res.status(200).send({ user });
+  } catch (err) {
+    return res.status(404).send({ error: "Error ao atualizar user" });
   }
 });
 
