@@ -19,8 +19,8 @@ router.post("/", async (req, res) => {
       { email },
       { new: true }
     )
-      .select("+password occurrence")
-      .populate("Task");
+      .select("+password")
+      .populate("occurrence");
 
     if (!user) {
       return res.status(400).send({ error: "User not found" });
@@ -46,46 +46,6 @@ router.post("/", async (req, res) => {
     return res.status(400).send({ error: "Error creating task of user" });
   }
 });
-
-// Ao policial clicar no botão "Aceitar" no front-end
-router.post("/:id", async (req, res) => {
-  const { email } = req.body;
-  try {
-    const task = await Task.findById(req.params.id);
-
-    const user = await User.findById(req.userId)
-      .select("+password")
-      .populate("occurrence");
-
-    const police = await Police.findOne({ email }).select(
-      "+password cpf assignedTo"
-    );
-
-    if (police.assignedTo != req.userId) {
-      await Police.findByIdAndUpdate(police.id, {
-        $set: {
-          assignedTo: user._id
-        }
-      });
-      await Task.findByIdAndUpdate(task.id, {
-        $set: {
-          completed: false
-        }
-      });
-    } else {
-      return res.status(403).send({ error: "Busy police error at the moment" });
-    }
-    await user.save();
-    await task.save();
-    await police.save();
-
-    req.io.sockets.in(police._id).emit("taskUpdate", task);
-    return res.status(200).send({ task, message: "Task updated was success!" });
-  } catch (err) {
-    return res.status(400).send({ error: "Error loading task" });
-  }
-});
-
 // listar as tasks não completadas
 router.post("/list", async (req, res) => {
   try {
@@ -101,94 +61,91 @@ router.post("/list", async (req, res) => {
   }
 });
 
-// listar as tasks de usuário
+// listar as tasks de usuário, usando id do usuário
 router.post("/list/:id", async (req, res) => {
   try {
-    const tasks = await Task.findOne({ assignedTo: req.params.id })
-      .select("+description title")
-      .populate("assignedTo");
+    const user = await User.findById(req.params.id)
+      .select("+password")
+      .populate("occurrence");
 
-    await Promise.all(
-      tasks.assignedTo.occurrence.map(async task => {
-        const userTask = new Task({
-          ...task,
-          assignedTo: req.params.id
-        });
-
-        await userTask.save();
-
-        tasks.assignedTo.occurrence.push(userTask);
-
-        req.io.sockets.in(user._id).emit("taskCreate", task);
-      })
-    );
-    return res.send({ occurrence });
+    return res.status(200).send({ tasks: user.occurrence });
   } catch (err) {
-    console.log(err);
-    return res.status(400).send(err);
+    return res.status(400).send({ error: "error" });
+  }
+});
+
+// Ao policial clicar no botão "Aceitar" no front-end
+router.post("/:id", async (req, res) => {
+  const { email } = req.body;
+  try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) return res.status(404).send({ error: "Task not found!" });
+
+    const user = await User.findById(req.userId).select("+password");
+
+    const police = await Police.findOne({ email }).select(
+      "+password cpf assignedTo"
+    );
+
+    if (police.assignedTo == undefined) {
+      await Police.findByIdAndUpdate(police._id, {
+        $set: {
+          assignedTo: user._id
+        }
+      });
+    } else {
+      return res.status(303).send({ error: "Police ocupado" });
+    }
+    await user.save();
+    await task.save();
+    await police.save();
+
+    req.io.sockets.in(police._id).emit("taskUpdate", task);
+    return res.status(200).send({ task, message: "Task updated was success!" });
+  } catch (err) {
+    return res.status(400).send({ error: "Error loading task" });
   }
 });
 
 router.post("/completed/:id", async (req, res) => {
   const { email } = req.body;
   try {
-    const task = await Task.findById(req.params.id).select(
-      "+description title completed assignedTo"
-    );
+    const task = await Task.findById(req.params.id);
 
-    if (!task) {
-      return res.status(404).send({ error: "Task not found" });
-    }
+    if (!task) return res.status(404).send({ error: "Task not found!" });
 
-    const user = await User.findByIdAndUpdate(req.userId, { new: true })
-      .select("+password location occurrence")
-      .populate("occurrence");
+    const user = await User.findById(req.userId).select("+password");
 
     const police = await Police.findOne({ email }).select(
       "+password cpf assignedTo"
     );
 
     if (police.assignedTo == req.userId) {
-      await Police.findByIdAndUpdate(police.id, {
+      await Police.findByIdAndUpdate(police._id, {
         $set: {
-          assignedTo: undefined
+          assignedTo: null
         }
-      }).select("+password cpf");
-      await Task.findByIdAndUpdate(task.id, {
-        $set: {
-          completed: true
-        }
-      }).select("+description title");
-
-      await Task.findByIdAndRemove(task.id).select("+description title");
-
-      const userTask = await Task.find({ assignedTo: req.userId }).select(
-        "+description title assignedTo"
+      });
+      await Task.findByIdAndRemove(task._id);
+      const userTask = await Task.find({ assignedTo: user._id }).select(
+        "+description title"
       );
-
-      await User.findByIdAndUpdate(user.id, {
+      await User.findByIdAndUpdate(user._id, {
         $set: {
           occurrence: userTask
         }
-      }).select("+password");
+      });
     } else {
-      return res
-        .status(403)
-        .status({ error: "Busy police error at the moment" });
+      return res.status(403).send({ error: "Police desocupado" });
     }
-
-    await task.save();
     await user.save();
+    await task.save();
     await police.save();
 
-    req.io.sockets.in(police._id).emit("taskUpdate", user);
-
-    user.password = undefined;
-    return res
-      .status(200)
-      .send({ user, message: "Task updated and deleted was success!" });
+    req.io.sockets.in(police._id).emit("taskUpdate", task);
+    return res.status(200).send({ task, message: "Task updated was success!" });
   } catch (err) {
-    console.log(err);
     return res.status(400).send({ error: "Erro completed task" });
   }
 });
@@ -196,47 +153,45 @@ router.post("/completed/:id", async (req, res) => {
 // atualizar task
 router.put("/:id", async (req, res) => {
   try {
-    const { email, password, location, occurrence } = req.body;
-
-    const user = await User.findByIdAndUpdate(
+    const { title, description } = req.body;
+    const reqTasks = await Task.findByIdAndUpdate(
       req.params.id,
+      { title, description },
       {
-        email,
-        password,
-        location
-      },
-      { new: true }
-    ).select("+password");
-
-    user.occurrence = [];
-    await Task.remove({ assignedTo: user._id });
-
-    await Promise.all(
-      occurrence.map(async task => {
-        const userTask = new Task({ ...task, assignedTo: user._id });
-
-        await userTask.save();
-
-        user.occurrence.push(userTask);
-      })
+        new: true
+      }
     );
 
-    await user.save();
-    user.password = undefined;
-
-    req.io.sockets.in(user._id).emit("taskUpdate", task);
-    return res.status(200).send({ user });
+    return res.status(200).send({ task: reqTasks });
   } catch (err) {
     return res.status(400).send({ error: "Error updating task" });
   }
 });
 
-// Deletar uma task
+// Deletar uma task(Perfect)
 router.delete("/:id", async (req, res) => {
   try {
-    await Task.findByIdAndRemove(req.params.id);
+    const reqTasks = await Task.findByIdAndRemove(req.params.id).select(
+      "+description title"
+    );
 
-    return res.status(200).send({ message: "Task remove with success." });
+    if (!reqTasks) return res.status(503).send({ error: "The Task no exist!" });
+
+    const userTask = await Task.find({ assignedTo: req.userId }).select(
+      "+description title"
+    );
+
+    const user = await User.findByIdAndUpdate(req.userId, {
+      $set: {
+        occurrence: userTask
+      }
+    })
+      .select("+password")
+      .populate("occurrence");
+
+    user.password = undefined;
+
+    return res.status(200).send({ occurrence: user.occurrence });
   } catch (err) {
     return res.status(400).send({ error: "Error deleting occurrence" });
   }
