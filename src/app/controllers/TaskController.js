@@ -50,7 +50,7 @@ router.post("/", async (req, res) => {
 router.post("/list", async (req, res) => {
   try {
     const tasks = await Task.find({ completed: false });
-    const police = await Police.findById(req.params.id);
+    const police = await Police.findById(req.userId);
 
     if (!police && !tasks) {
       return res.status(404).send({ error: "Error loading tasks" });
@@ -102,7 +102,6 @@ router.post("/:id", async (req, res) => {
     req.io.sockets.in(police._id).emit("taskUpdate", task);
     return res.status(200).send({ task });
   } catch (err) {
-    console.log(err);
     return res.status(400).send({ error: "Error loading task" });
   }
 });
@@ -147,7 +146,6 @@ router.post("/completed/:id", async (req, res) => {
     req.io.sockets.in(police._id).emit("taskUpdate", task);
     return res.status(200).send({ police });
   } catch (err) {
-    console.log(err);
     return res.status(400).send({ error: "Erro completed task" });
   }
 });
