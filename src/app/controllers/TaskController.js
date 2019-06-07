@@ -50,8 +50,9 @@ router.post("/", async (req, res) => {
 router.post("/list", async (req, res) => {
   try {
     const tasks = await Task.find({ completed: false });
+    const police = await Police.findById(req.params.id);
 
-    if (!tasks) {
+    if (!police && !tasks) {
       return res.status(404).send({ error: "Error loading tasks" });
     }
 
@@ -76,76 +77,77 @@ router.post("/list/:id", async (req, res) => {
 
 // Ao policial clicar no botão "Aceitar" no front-end
 router.post("/:id", async (req, res) => {
-  const { email } = req.body;
   try {
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findById(req.params.id).select("+assignedTo");
 
     if (!task) return res.status(404).send({ error: "Task not found!" });
 
-    const user = await User.findById(req.userId).select("+password");
-
-    const police = await Police.findOne({ email }).select(
+    const police = await Police.findById(req.userId).select(
       "+password cpf assignedTo"
     );
 
     if (police.assignedTo == undefined) {
       await Police.findByIdAndUpdate(police._id, {
         $set: {
-          assignedTo: user._id
+          assignedTo: task._id
         }
       });
     } else {
       return res.status(303).send({ error: "Police ocupado" });
     }
-    await user.save();
     await task.save();
     await police.save();
+    police.password = undefined;
 
     req.io.sockets.in(police._id).emit("taskUpdate", task);
-    return res.status(200).send({ task, message: "Task updated was success!" });
+    return res.status(200).send({ task });
   } catch (err) {
+    console.log(err);
     return res.status(400).send({ error: "Error loading task" });
   }
 });
 
+// completed Task of user with the Police
 router.post("/completed/:id", async (req, res) => {
-  const { email } = req.body;
   try {
     const task = await Task.findById(req.params.id);
 
     if (!task) return res.status(404).send({ error: "Task not found!" });
 
-    const user = await User.findById(req.userId).select("+password");
-
-    const police = await Police.findOne({ email }).select(
+    const police = await Police.findById(req.userId, { new: true }).select(
       "+password cpf assignedTo"
     );
 
-    if (police.assignedTo == req.userId) {
+    if (police.assignedTo == task.id) {
       await Police.findByIdAndUpdate(police._id, {
         $set: {
           assignedTo: null
         }
       });
       await Task.findByIdAndRemove(task._id);
-      const userTask = await Task.find({ assignedTo: user._id }).select(
+      const userTask = await Task.find({ assignedTo: task._id }).select(
         "+description title"
       );
-      await User.findByIdAndUpdate(user._id, {
+      await User.findByIdAndUpdate(task.assignedTo, {
         $set: {
           occurrence: userTask
         }
       });
     } else {
-      return res.status(403).send({ error: "Police desocupado" });
+      return res
+        .status(403)
+        .send({ error: "Police não pegou nenhuma ocorrência." });
     }
-    await user.save();
     await task.save();
     await police.save();
 
+    police.password = undefined;
+    police.cpf = undefined;
+
     req.io.sockets.in(police._id).emit("taskUpdate", task);
-    return res.status(200).send({ task, message: "Task updated was success!" });
+    return res.status(200).send({ police });
   } catch (err) {
+    console.log(err);
     return res.status(400).send({ error: "Erro completed task" });
   }
 });
@@ -171,19 +173,15 @@ router.put("/:id", async (req, res) => {
 // Deletar uma task(Perfect)
 router.delete("/:id", async (req, res) => {
   try {
-    const reqTasks = await Task.findByIdAndRemove(req.params.id).select(
-      "+description title"
-    );
+    const reqTasks = await Task.findByIdAndRemove(req.params.id, {
+      assignedTo: req.userId
+    }).select("+description title");
 
     if (!reqTasks) return res.status(503).send({ error: "The Task no exist!" });
 
-    const userTask = await Task.find({ assignedTo: req.userId }).select(
-      "+description title"
-    );
-
     const user = await User.findByIdAndUpdate(req.userId, {
       $set: {
-        occurrence: userTask
+        occurrence: reqTasks
       }
     })
       .select("+password")
