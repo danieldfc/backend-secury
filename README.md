@@ -8,8 +8,8 @@
 
 [![express](https://img.shields.io/badge/express-4.16.4-brightgreen.svg)](https://www.npmjs.com/package/express)
 [![node](https://img.shields.io/badge/node-%5E10.13.0-brightgreen.svg)](https://nodejs.org/en/)
-[![GitHub issues](https://img.shields.io/badge/open%20issues-0-brightgreen.svg)](https://github.com/danielfelizardo2017/backend-secury/issues)
-[![GitHub last commit](https://img.shields.io/badge/last%20commit-today-orange.svg)](https://github.com/danielfelizardo2017/backend-secury/commits/master)
+[![GitHub issues](https://img.shields.io/badge/open%20issues-0-brightgreen.svg)](https://github.com/DanielFelizardoDev/backend-secury/issues)
+[![GitHub last commit](https://img.shields.io/badge/last%20commit-today-orange.svg)](https://github.com/DanielFelizardoDev/backend-secury/commits/master)
 
 <!-- LOGO -->
 <br/>
@@ -18,28 +18,28 @@
     <img src="src/assets/logo-dev.jpg" alt="Logo">
   </a>
 
-  <h3 align="center">feat. DevPleno, Daniel Felizardo - Desenvolvedor Front-End</h3>
+  <h3 align="center">Daniel Felizardo - FullStack Developer</h3>
 </p>
 
 <!-- TABLE OF CONTENTS -->
 
-## Tabela de Conteúdo
+# Tabela de Conteúdo
 
-- [Tabela de Conteúdo](#tabela-de-conte%C3%BAdo)
+- [Tabela de Conteúdo](#tabela-de-conteúdo)
 - [Agradecimentos](#Agradecimentos)
 - [Sobre o Projeto e Requisitos](#sobre-o-projeto-e-requisitos)
   - [Feito Com](#feito-com)
-- [Começando](#come%C3%A7ando)
-  - [Pré-requisitos](#pr%C3%A9-requisitos)
+- [Começando](#começando)
+  - [Pré-requisitos](#pré-requisitos)
   - [Enter Points](#Enter-Points)
   - [Estrutura de Arquivos](#estrutura-de-arquivos)
-  - [Edição](#edi%C3%A7%C3%A3o)
-- [Contribuição](#contribui%C3%A7%C3%A3o)
+  - [Edição](#edição)
+- [Contribuição](#contribuição)
 - [Contato](#contato)
 
 # Agradecimentos
 
-Este projeto e o meu TCC-BACKEND, ele também está disponível na versão mobile, [neste link](https://github.com/danielfelizardo2017/frontend-secury).
+Este projeto e o meu TCC-BACKEND, ele também está disponível na versão mobile, [neste link](https://github.com/DanielFelizardoDev/frontend-secury).
 
 Antes de mais nada, gostaria de agradecer ao **IFPB - Campus Esperança**, por ter me incentivado desde o início do projeto, ao meu orientador **Ramon Nóbrega**, muito obrigado por ter me ajudado a seguir em frente e deixar tudo que é ruim para trás, como também a minha família e amigos, sem eles não estaria concluindo este trabalho.
 
@@ -49,9 +49,9 @@ Antes de mais nada, gostaria de agradecer ao **IFPB - Campus Esperança**, por t
 
 Este projeto foi pensado juntamente com meu orientador e outras entidades do IFPB, a enfatizarem a questão da segurança. Podemos ver diariamente pessoas vítimas de assalto, sendo assim feridas ou mortas, por não ter chegado mais rápido a viatura, ou algum policial não estar presente naquele local, isto é um **problema**, que pode ser **solucionado**. O motivo pelo qual foi colocado essa ideia em prática, foi por causa da falta de um atendimento mais rápido entre a **polícia** e o **usuário**.
 
-Então, este projeto não só ajudará a ter o meu diploma de Técnico em Informática, mas contribuirá com a sociedade, para que possamos estar mais seguros.
+Então, este projeto não só ajudará a ter o meu diploma de Técnico em Informática, mas contribuirá com a sociedade, para que possamos estar mais "seguros".
 
-Os requesitos desta aplicação para o backend é: Ter uma forma de login para o usuário e policial; Autênticação por email, para teste foi feito com o MailTrap(SMTP); Ter a funcionalidade de enviar ocorrências em tempo real para o policial.
+Os requesitos desta aplicação para o backend é: Ter uma forma de login para o usuário e ao policial; Autênticação por email, para teste foi feito com o MailTrap(SMTP); Ter a funcionalidade de enviar ocorrências em tempo real para o policial.
 
 ## Feito Com
 
@@ -63,7 +63,7 @@ Abaixo segue o que foi utilizado na criação deste projeto:
 - [express-handlebars](https://www.npmjs.com/package/express-handlebars) - O Express Handlebars é um package engine para formatação de layouts, que é dependente do pacote `Handlebars`.
 - [gerador-validador-cpf](https://www.npmjs.com/package/gerador-validador-cpf) - Basicamente, esse package tem a funcionalidade de validar o cpf.
 - [handlebars](https://www.npmjs.com/package/handlebars) - O Handlebars, é um package de formatação de layouts, podendo ter a funcionalidade de trocar o engine para outros tipos de arquivos de layout.
-- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) - O jwt, tem a funcionalidade de gerar um token de autênticação com o usuário.
+- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) - O jwt, tem a funcionalidade de gerar um token de autênticação para o usuário.
 - [mongoose](https://www.npmjs.com/package/mongoose) - O Mongoose, permite criar entidades e relacionamentos, a partir de classes.
 - [nodemailer](https://www.npmjs.com/package/nodemailer) - O Nodemailer, tem como função enviar email formatado para algum usuário.
 - [nodemailer-express-handlebars](https://www.npmjs.com/package/nodemailer-express-handlebars) - Este pacote tem como função referenciar um certo tipo de requisição para a entrega de emails.
@@ -75,9 +75,9 @@ Abaixo segue o que foi utilizado na criação deste projeto:
 
 Ao começar este projeto pude perceber o quão foi complicado usar as tecnologias com o **Node**. Este foi o meu primeiro contato, como projeto pessoal, sei que ainda precisa de muitos ajustes, caso você encontre algum erro, ou queira nos ajudar a este projeto crescer crie uma [issue](https://github.com/danielfelizardo2017/backend-secury/issues).
 
-Antes de imigrar para essa tecnologia, foi preciso estudar sobre **JavaScript**. Hoje, há várias atualizações, a que mais foi preciso ter um pouco mais de atenção, foi a **EcmaScript**, com isso, a complexidade que havia em entender cada funcionalidade, foi abrindo meus olhos e podendo enxergar o quão poderosa ela é.
+Antes de imigrar para essa tecnologia, foi preciso estudar sobre **JavaScript**. Essa tecnologia tem várias atualizações, e a que mais foi preciso ter um pouco mais de atenção, foi a **EcmaScript**, com isso, a complexidade que havia em entender cada funcionalidade, foi abrindo meus olhos e podendo enxergar o quão poderosa ela é.
 
-Quando conheci o **NodeJS**, que também está escrito em JavaScript, foi então que decidi a tecnologia que iria usar no projeto. Juntamente com o NPM e o Yarn, que são geradores de pacotes, deixa tudo mais fácil a comunicação no servidor. Para criar um servidor simples em nodeJS, é utilizado o **Express**, que por sua vez, habilita uma porta para o cliente, ter acesso aos serviços da API. Para criar o arquivo de server da aplicação, dentro do projeto, crie o arquivo `server.js` e adicione o seguinte conteúdo, e antes de criar o arquivo, adicione a dependência `Express` no seu projeto, executando o seguinte comando no CMD:
+Quando conheci o **NodeJS**, que também está escrito em JavaScript, foi então que decidi a tecnologia que iria usar no projeto. Juntamente com o NPM e o Yarn, que são geradores de pacotes, deixa tudo mais fácil a comunicação no servidor. Para criar um servidor simples em nodeJS, é utilizado o **Express**, que por sua vez, habilita uma porta para o cliente, ter acesso aos serviços da API. Para criar o arquivo de server da aplicação, dentro do projeto, crie o arquivo `server.js` e adicione o seguinte conteúdo, mas antes de criar o arquivo, adicione a dependência `Express` no seu projeto, executando o seguinte comando no CMD:
 
 ```
   $ npm install express --save
@@ -94,12 +94,10 @@ Agora você pode criar o arquivo e adicionar o seguinte conteúdo:
     console.log("Teste");
   });
 
-  app.listen(3333, function(){
-    console.log("Server init on port 3333");
-  });
+  app.listen(3333);
 ```
 
-E para testar a aplicação, basta rodar o seguinte comando no CMD:
+Para testar a aplicação, basta rodar o seguinte comando no CMD:
 
 ```
   $ node server.js
@@ -142,8 +140,8 @@ Enter points, é a navegação pelo qual se faz requisições seja ela get, post
   Para controlar as ocorrências e manter um funcionamento entre as entidades e relacionamentos, foi criado o arquivo `src/app/controllers/TaskController.js`, para guardar toda a na nossa aplicação. Caso seja ele policial, terá acesso a essas rotas:
 
   ```
-    METHOD:POST    http://localhost:3333/task/list
     METHOD:POST    http://localhost:3333/task/:id
+    METHOD:POST    http://localhost:3333/task/list
     METHOD:POST    http://localhost:3333/task/completed/:id
   ```
 
@@ -151,11 +149,9 @@ Enter points, é a navegação pelo qual se faz requisições seja ela get, post
 
   ```
     METHOD:POST    http://localhost:3333/task/
-    METHOD:POST    http://localhost:3333/task/list
-    METHOD:POST    http://localhost:3333/task/:id
-    METHOD:POST    http://localhost:3333/task/completed/:id
     METHOD:PUT     http://localhost:3333/task/:id
     METHOD:DELETE  http://localhost:3333/task/:id
+    METHOD:POST    http://localhost:3333/task/list/:id
   ```
 
 ## Estrutura de Arquivos
@@ -213,7 +209,7 @@ Nesta seção haverão instruções caso você queira editar o projeto, explican
 
     - **mail** - Diretório de email.
       - **auth** - Diretório de email de autênticação.
-        - **police** - Pasta de templates para a policia.
+        - **police** - Pasta de templates para a policial.
         - **user** - Pasta de templates para o usuário.
 
   - **server.js** - Arquivo raiz da aplicação, também chamado de _Entry Point_, é o primeiro arquivo chamado no momento do build e execução da aplicação, nele é chamado o arquivo `index.js` que por sua vez chama as rotas da aplicação.
@@ -223,7 +219,7 @@ Nesta seção haverão instruções caso você queira editar o projeto, explican
 
 * **package.json** - Diferente dos projetos comuns, esse arquivo tem as configurações necessárias e para o link da referência da pasta `node_modules`.
 
-- **Procfile** - Arquivo de configuração do Heroku, para instalar as libs do seu projeto online.
+- **Procfile** - Arquivo de configuração do `Heroku`, para instalar as libs do seu projeto online.
 
 * **README.md** - Arquivo de leitura do projeto, tais como o auxílio de outros programadores utilizarem como base.
 
