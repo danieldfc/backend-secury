@@ -79,7 +79,9 @@ router.post("/list/:id", async (req, res) => {
 // Ao policial clicar no botão "Aceitar" no front-end
 router.post("/:id", async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id).select("+assignedTo");
+    const task = await Task.findById(req.params.id)
+    .select("+assignedTo")
+    .populate("assignedTo");
 
     if (!task) return res.status(404).send({ error: "Task not found!" });
 
