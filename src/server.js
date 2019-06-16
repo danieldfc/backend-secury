@@ -13,17 +13,12 @@ app.set("view engine", "handlebars");
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 
-io.on("connection", socket => {
-  socket.on("connectRoom", user => {
-    socket.join(user);
-  });
-});
-
 require("./database");
 
 app.use((req, res, next) => {
   req.io = io;
-  return next();
+
+  next();
 });
 
 app.use(bodyParser.json());

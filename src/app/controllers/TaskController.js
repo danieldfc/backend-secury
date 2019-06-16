@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
 
         user.occurrence.push(userTask);
 
-        req.io.sockets.in(user._id).emit("taskCreate", task);
+        req.io.emit("taskCreate", task);
       })
     );
 
@@ -80,8 +80,8 @@ router.post("/list/:id", async (req, res) => {
 router.post("/:id", async (req, res) => {
   try {
     const task = await Task.findById(req.params.id)
-    .select("+assignedTo")
-    .populate("assignedTo");
+      .select("+assignedTo")
+      .populate("assignedTo");
 
     if (!task) return res.status(404).send({ error: "Task not found!" });
 
@@ -102,7 +102,7 @@ router.post("/:id", async (req, res) => {
     await police.save();
     police.password = undefined;
 
-    req.io.sockets.in(police._id).emit("taskUpdate", task);
+    req.io.emit("taskUpdate", task);
     return res.status(200).send({ task });
   } catch (err) {
     return res.status(400).send({ error: "Error loading task" });
