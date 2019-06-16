@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
 
         user.occurrence.push(userTask);
 
-        req.io.emit("taskCreate", task);
+        req.io.emit("task", task);
       })
     );
 
@@ -102,7 +102,7 @@ router.post("/:id", async (req, res) => {
     await police.save();
     police.password = undefined;
 
-    req.io.emit("taskUpdate", task);
+    req.io.emit("task", task);
     return res.status(200).send({ task });
   } catch (err) {
     return res.status(400).send({ error: "Error loading task" });
@@ -146,7 +146,7 @@ router.post("/completed/:id", async (req, res) => {
     police.password = undefined;
     police.cpf = undefined;
 
-    req.io.sockets.in(police._id).emit("taskUpdate", task);
+    req.io.emit("task", task);
     return res.status(200).send({ police });
   } catch (err) {
     return res.status(400).send({ error: "Erro completed task" });
